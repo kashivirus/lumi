@@ -10,9 +10,9 @@ https://hackernoon.com/a-tutorial-to-deploy-the-nodejs-app-to-nginx-server
 docker run -it --name my_container 174c8c134b2a /bin/bash
 docker run -it --name my_container ubuntu:latest /bin/bash
 
-su -
-apt-get update
-apt-get install sudo
+ 
+apt-get update;
+apt-get install sudo;
 
 sudo adduser admin
 sudo usermod -aG sudo admin
@@ -21,4 +21,20 @@ su - admin
 sudo ls /root
 
 
+sudo apt update;
+sudo apt install systemctl;
+sudo apt install mysql-server;
 
+
+sudo mysql_secure_installation
+
+systemctl status mysql
+
+
+
+
+CREATE USER 'admin'@'localhost' IDENTIFIED BY 'admin';
+GRANT CREATE, ALTER, DROP, INSERT, UPDATE, INDEX, DELETE, SELECT, REFERENCES, RELOAD on *.* TO 'admin'@'localhost' WITH GRANT OPTION;
+GRANT ALL PRIVILEGES ON *.* TO 'admin'@'localhost' WITH GRANT OPTION;
+FLUSH PRIVILEGES;
+exit;

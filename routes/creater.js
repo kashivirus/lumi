@@ -1,11 +1,12 @@
 import express from "express";
-import { addStory, allCreators, checkEmail, checkSession, checkUserName, checkWallet, fetchAllNfts, fetchAllNftsWithCatId, getAllCatergories,   getAllNftsData,   getSingleArt, getStories, inWalletArts, leadersboard, login, mintArt, signUp, singleCreator, updateCoverPhot, updateCreatorInfo, updateSalePrice, uploadProfilePicture } from "../controller/creators.js";
+import { addBidding, addStory, allCreators, auctionTransfer, cancelFixedPriceSale, checkEmail, checkSession, checkUserName, checkWallet, directTransfer, fetchAllNfts, fetchAllNftsWithCatId, getAllCatergories,   getAllNftsData,   getSingleArt, getStories, inWalletArts, leadersboard, listOnAuction, login, makeOffer, mintArt, putOnFixedSale, signUp, singleCreator, updateCoverPhot, updateCreatorInfo, updateSalePrice, uploadProfilePicture } from "../controller/creators.js";
 import fileuploads from "../config/fileUploads.js";
 import uploads from "../config/nftUpload.js";
 import uploadStory from "../config/uploadStory.js";
 import uploadsProfile from "../config/profileUpload.js";
 import uploadCover from "../config/coverUpload.js";
 import uploadsNFT from "../config/nftUpload.js";
+import AcceptFormdata from "../config/AcceptFormdata.js";
 
 
 const router = express.Router()
@@ -52,22 +53,26 @@ router.get("/inwallet" , inWalletArts)
 router.post("updateInfo" , updateCreatorInfo)
 
 
-
+// mint router
 router.post('/minArt' ,uploadsNFT ,   mintArt)
+router.post("/putOnFixedPrice"  , AcceptFormdata.none() , putOnFixedSale)
+
+
+router.post("/cancelFixedSale" , cancelFixedPriceSale)
+
+router.post("/directTransfer" , AcceptFormdata.none() , directTransfer)
+
+
+router.post("/updateSalePrice" , updateSalePrice);
+
+// listed on Auctions
+router.post("/listOnAuction"   , AcceptFormdata.none(), listOnAuction)
+router.post('addBidding' , addBidding)
 
 
 
+router.post('auctionTransfer' , auctionTransfer)
 
-// router.post(
-//     "/putOnFixedPrice",
-//     formdata.none(),
-//     creatorController.putOnFixedSale
-//   );
-
-router.post("/updateSalePrice" , updateSalePrice)
-
-
-
-
+router.post("/makeOffer" , makeOffer)
 
 export default router;

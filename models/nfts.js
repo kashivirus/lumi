@@ -419,6 +419,163 @@ fetchAllNfts(start, end) {
         }
 
 
-}
+        putOnFixSale({orderId, tokenId, transactionsHash, ownerWallet, price}){
+            return db.execute(`
+                INSERT INTO fixedprice SET orderId = '${orderId}',
+                tokenId =  ${tokenId},
+                transactionHash = '${transactionsHash}',
+                owner = '${ownerWallet}',
+                price = '${price}'
+            `)
+        }
+
+        updateStatusofNFTS(tokenId){
+            return db.execute(`UPDATE nfts SET sale=1 , fixedPrice =1 
+            WHERE tokenId=${tokenId}
+            `)
+        }
+
+
+
+        cancelFixedPriceSale({ orderId, tokenId }) {
+            return db.execute(`DELETE FROM fixedprice
+            WHERE
+            orderId = ${orderId}
+            AND
+            tokenId = ${tokenId}
+        `);}
+
+
+        resetNFTStatus(tokenId) {
+            return db.execute(`UPDATE nfts SET sale = 0,fixedprice = 0
+            WHERE
+            tokenId = ${tokenId}
+        `);
+        }
+
+        directTransfer({transferFrom , transferTo, amount, tokenId, orderId, transferHash}){
+            return db.execute(`
+                INSERT INTO transfernft SET transferFrom = ${transferFrom} ,
+                transferTo = ${transferTo},
+                amount = ${amount},
+                tokenId = ${tokenId},
+                transferType = 'DirectTransfer',
+                tranferReferenceId = ${orderId}, 
+                transferHash = ${transferHash}
+
+            `)
+        }
+
+
+
+        updateFixedTable(tokenId, orderId){
+            return db.execute(`
+                UPDATE fixedprice SET onSale =0, isSold =1, status=0
+                WHERE
+                tokenId = ${tokenId} AND orderId =${orderId}
+            `)
+
+        }
+
+
+
+        listOnAuctions({auctionId , tokenId, transactionsHash, ownerWallet, reservePrice}){
+            const currentDate = new Date();
+            const unixTimeStamp = currentDate.getTime();
+            const endTime = 24  * 60  *60;
+            const unixTimeStampInSeconds = Math.floor(unixTimeStamp / 1000 + endTime);
+
+            return db.execute(`
+
+            INSERT INTO auctions SET auctionId = ${auctionId}, 
+            tokenId = ${tokenId} , 
+            transactionsHash = '${transactionsHash}',
+            owner_address = '${ownerWallet}',
+            reservePrice = '${reservePrice}',
+            endTimeInSeconds = ${unixTimeStampInSeconds}
+
+                `)
+
+        }
+
+
+        updateStatusOfNFTtoAuction(tokenId){
+            return db.execute(`UPDATE nfts SET sale=1, auction=1 
+            WHERE tokenId = ${tokenId}
+            `)
+        }   
+
+
+        updateBiddingOnAuction(
+            tokenId,
+            auctionId,
+            highestBid,
+            endTimeInSeconds,
+            highestBidder
+        ) {
+            return db.execute(`UPDATE auctions SET highestBid = '${highestBid}' ,endTimeInSeconds = '${endTimeInSeconds}',highestBidder = '${highestBidder}'
+            WHERE
+            tokenId = ${tokenId}
+            AND
+            auctionId = ${auctionId}
+        `);}
+
+
+
+        addBidding(auctionId, highestBidder, txHash, highestBid) {
+            return db.execute(`INSERT INTO biddings SET auction_id = ${auctionId}, bidder_id = '${highestBidder}', transferHash = '${txHash}', price = '${highestBid}'
+        `);
+        }
+
+
+        auctionTransfer({
+            transferFrom,
+            transferTo,
+            amount,
+            tokenId,
+            auctionId,
+            transferHash,
+        }) {
+            return db.execute(`INSERT INTO transfernft SET transferFrom = '${transferFrom}',transferTo = '${transferTo}', amount = '${amount}',tokenId = ${tokenId},transferType = 'AuctionWon',tranferReferenceId = ${auctionId},transferHash = '${transferHash}'
+        `);
+        }
+
+
+        resetAuctionTable(tokenId, auctionId) {
+            return db.execute(`UPDATE auctions SET isSettled = 1,status = 0
+            WHERE
+            tokenId = ${tokenId}
+            AND
+            auctionId = ${auctionId}
+        `);
+        }
+
+
+        createNotificationAuctionTransfer(transferTo, tokenId) {
+            return db.execute(`INSERT INTO notifications SET recieverAddress = '${transferTo}', tokenId = ${tokenId},type = "AuctionWon"
+        `);
+        }
+
+
+        updateOwnerAfterDirectTransfer(tokenId, transferTo) {
+            return db.execute(`UPDATE nfts SET ownerWallet = '${transferTo}'
+            WHERE
+            tokenId = ${tokenId}
+        `);}
+
+
+        makeOffer({ offerId, tokenId, senderAddress, receiverAddress, offerPrice }) {
+            return db.execute(`INSERT INTO offers SET offerId = ${offerId}, tokenId = ${tokenId},sender_address = '${senderAddress}',reciever_address = '${receiverAddress}', offer_price = '${offerPrice}'
+        `);
+        }
+
+
+        offerReceivedNotification(receiverAddress, tokenId, offerId, type) {
+            return db.execute(`INSERT INTO notifications SET recieverAddress = '${receiverAddress}', tokenId = ${tokenId},offerId = ${offerId}, type = '${type}'
+        `);
+          }
+
+}   
+
 export default NFTS;
 

@@ -563,6 +563,238 @@ const updateSalePrice = async(req, res, next)=>{
     }
 }
 
+
+
+const putOnFixedSale = async(req, res, next)=>{
+    let payload = req.body;
+
+    if(payload){
+        try {
+            const result = await nfts.putOnFixSale(payload)
+            const updateStatusOfNFTS =await nfts.updateStatusofNFTS(payload.tokenId)
+            if(result && updateStatusOfNFTS){
+                return res.status(201).json({message:"Success" , tokenId:payload.tokenId})
+            }else{
+                return next({ code: 404, message: "no request found" });
+            }
+
+        } catch (error) {
+            return next({ code: 401, message: error.message });
+        }
+    }else{
+        return next({ code: 400, message: "No Request Found" });
+    }
+}
+
+
+const cancelFixedPriceSale = async (req, res, next) => {
+
+let payload = req.body;
+
+if (payload) {
+    try {
+    const result = await nfts.cancelFixedPriceSale(payload);
+    const resetListings = await nfts.resetNFTStatus(payload.tokenId);
+    if (result && resetListings) {
+        return res.status(201).json({
+        message: "Successfully Cancelled Fixed Price Sale",
+        tokenId: payload.tokenId,
+        price: payload.price,
+        });
+    } else {
+        return next({ code: 404, message: "no request found" });
+    }
+    } catch (error) {
+    return next({ code: 401, message: error });
+    }
+} else {
+    return next({ code: 400, message: "No Request Found" });
+}
+};
+
+
+
+const directTransfer = async (req, res, next) => {
+let payload = req.body;
+
+if (payload) {
+    try {
+    const result = await nfts.directTransfer(payload);
+    const resetListings = await nfts.resetNFTStatus(payload.tokenId);
+    const updateFixedTable = await nfts.updateFixedTable(
+        payload.tokenId,
+        payload.orderId
+    );
+
+    const updateOwner = await nfts.updateOwnerAfterDirectTransfer(
+        payload.tokenId,
+        payload.transferTo
+    );
+
+    if (
+        result &&
+        resetListings &&
+        updateFixedTable &&
+        // createNotification &&
+        updateOwner
+    ) {
+        return res.status(201).json({
+        message: "NFT Transferred successfully",
+        tokenId: payload.tokenId,
+        });
+    } else {
+        return next({ code: 404, message: "no request found" });
+    }
+    } catch (error) {
+    return next({ code: 401, message: error });
+    }
+} else {
+    return next({ code: 400, message: "No Request Found" });
+}
+};
+
+
+const listOnAuction = async (req, res, next) => {
+ 
+let payload = req.body;
+
+if (payload) {
+    try {
+    const result = await nfts.listOnAuction(payload);
+    const updateStatusOfNFTs = await nfts.updateStatusOfNFTtoAuction(
+        payload.tokenId
+    );
+    if (result && updateStatusOfNFTs) {
+        return res.status(201).json({
+        message: "Listed On Auction Successfylly",
+        tokenId: payload.tokenId,
+        });
+    } else {
+        return next({ code: 404, message: "no request found" });
+    }
+    } catch (error) {
+    return next({ code: 401, message: error.message });
+    }
+} else {
+    return next({ code: 400, message: "No Request Found" });
+}
+};
+
+
+const addBidding = async (req, res, next) => {
+ 
+let payload = req.body;
+
+if (payload) {
+try {
+    const updateAuctionTable = await nfts.updateBiddingOnAuction(
+    payload.tokenId,
+    payload.auctionId,
+    payload.highestBid,
+    payload.endTimeInSeconds,
+    payload.highestBidder
+    );
+    const result = await nfts.addBidding(
+    payload.auctionId,
+    payload.highestBidder,
+    payload.txHash,
+    payload.highestBid
+    );
+
+    if (result && updateAuctionTable) {
+    return res.status(201).json({
+        message: "Bidded Successfylly",
+        tokenId: payload.tokenId,
+    });
+    } else {
+    return next({ code: 404, message: "no request found" });
+    }
+} catch (error) {
+    return next({ code: 401, message: error });
+}
+} else {
+return next({ code: 400, message: "No Request Found" });
+}
+};
+
+
+const auctionTransfer = async (req, res, next) => {
+
+let payload = req.body;
+
+if (payload) {
+    try {
+    const result = await nfts.auctionTransfer(payload);
+    const resetListings = await nfts.resetNFTStatus(payload.tokenId);
+    const updateFixedTable = await nfts.resetAuctionTable(
+        payload.tokenId,
+        payload.auctionId
+    );
+    const createNotification = await nfts.createNotificationAuctionTransfer(
+        payload.transferTo,
+        payload.tokenId
+    );
+    const updateOwner = await nfts.updateOwnerAfterDirectTransfer(
+        payload.tokenId,
+        payload.transferTo
+    );
+
+    if (
+        result &&
+        resetListings &&
+        updateFixedTable &&
+        createNotification &&
+        updateOwner
+    ) {
+        return res.status(201).json({
+        message: "NFT Transferred successfully",
+        tokenId: payload.tokenId,
+        });
+    } else {
+        return next({ code: 404, message: "no request found" });
+    }
+    } catch (error) {
+    return next({ code: 401, message: error });
+    }
+} else {
+    return next({ code: 400, message: "No Request Found" });
+}
+};
+
+
+
+const makeOffer = async (req, res, next) => {
+
+let payload = req.body;
+let type = "offerReceived";
+if (payload) {
+    try {
+    const result = await nfts.makeOffer(payload);
+    const createNotification = await nfts.offerReceivedNotification(
+        payload.receiverAddress,
+        payload.tokenId,
+        payload.offerId,
+        type
+    );
+
+    if (result && createNotification) {
+        return res.status(201).json({
+        message: "Offer Made successfully",
+        tokenId: payload.tokenId,
+        offerId: payload.offerId,
+        });
+    } else {
+        return next({ code: 404, message: "no request found" });
+    }
+    } catch (error) {
+    return next({ code: 401, message: error });
+    }
+} else {
+    return next({ code: 400, message: "No Request Found" });
+}
+};
+
+
 export 
     {
         checkSession ,
@@ -586,7 +818,14 @@ export
         updateCoverPhot,
         updateCreatorInfo,
         mintArt,
-        updateSalePrice
+        updateSalePrice,
+        putOnFixedSale,
+        cancelFixedPriceSale,
+        directTransfer,
+        listOnAuction,
+        addBidding,
+        auctionTransfer,
+        makeOffer
 
     
     
