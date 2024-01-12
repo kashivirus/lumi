@@ -136,14 +136,7 @@ class Creators{
     }
 
 
-    resetAuctionTable(tokenId, auctionId) {
-        return db.execute(`UPDATE auctions SET isSettled = 1,status = 0
-        WHERE
-        tokenId = ${tokenId}
-        AND
-        auctionId = ${auctionId}
-    `);
-      }
+    
 
 
 }
