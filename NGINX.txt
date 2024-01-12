@@ -1,0 +1,24 @@
+
+
+
+
+https://hackernoon.com/a-tutorial-to-deploy-the-nodejs-app-to-nginx-server
+
+
+
+
+docker run -it --name my_container 174c8c134b2a /bin/bash
+docker run -it --name my_container ubuntu:latest /bin/bash
+
+su -
+apt-get update
+apt-get install sudo
+
+sudo adduser admin
+sudo usermod -aG sudo admin
+sudo usermod -aG adm admin
+su - admin
+sudo ls /root
+
+
+

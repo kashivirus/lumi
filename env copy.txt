@@ -1,0 +1,9 @@
+
+
+
+
+NFT_VIDEO_PATH="/public/videos/nfts"
+NFT_IMAGES_PATH="/public/images/nfts"
+PROFILE_PIC_PATH="/public/images/users"
+STORIES="/public/stories"
+COVER="/public/cover"
