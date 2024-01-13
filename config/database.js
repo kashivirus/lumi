@@ -7,7 +7,7 @@ var pool = mysql.createPool({
     user:    "admin",
     password: "admin",
     database: "lumishare",
-    port: 3307,
+    port: 3306,
 });
 
 pool.getConnection((err, connection) => {
