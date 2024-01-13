@@ -30,7 +30,13 @@ app.use((req, res, next) => {
 
 // app.use(`${serverUrl}/api/`, creators);
 
+import database from "./config/database.js"
 
+
+app.get("/nginx" ,async (req, res)=>{
+    const [resolve] = await database.execute("SELECT  *  FROM creators")
+    res.status(200).json(resolve[0])
+})
 
 app.use(creators);
 
