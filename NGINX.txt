@@ -4,6 +4,8 @@
 
 https://hackernoon.com/a-tutorial-to-deploy-the-nodejs-app-to-nginx-server
 
+https://www.digitalocean.com/community/tutorials/how-to-set-up-a-node-js-application-for-production-on-ubuntu-16-04#step-5-setting-up-nginx-as-a-reverse-proxy-server
+
 
 
 
@@ -14,23 +16,47 @@ docker run -it --name my_container ubuntu:latest /bin/bash
 apt-get update;
 apt-get install sudo;
 
+
+
+
 sudo adduser admin
+
 sudo usermod -aG sudo admin
+
 sudo usermod -aG adm admin
+
 su - admin
+
 sudo ls /root
 
 
+
+
+
+
+
+
+
 sudo apt update;
-sudo apt install systemctl;
-sudo apt install mysql-server;
+sudo apt install systemctl -y;
+ 
+sudo apt install mysql-server -y;
 
 
-sudo mysql_secure_installation
+sudo systemctl stop mysql;
 
-systemctl status mysql
+sudo chown -R mysql:mysql /var/lib/mysql;
+sudo chown -R mysql:mysql /var/run/mysqld;
 
 
+sudo chmod 755 /var/lib/mysql;
+sudo chmod 755 /var/run/mysqld;
+
+
+sudo systemctl start mysql;
+
+
+sudo mysql;
 
 
 CREATE USER 'admin'@'localhost' IDENTIFIED BY 'admin';
@@ -38,3 +64,129 @@ GRANT CREATE, ALTER, DROP, INSERT, UPDATE, INDEX, DELETE, SELECT, REFERENCES, RE
 GRANT ALL PRIVILEGES ON *.* TO 'admin'@'localhost' WITH GRANT OPTION;
 FLUSH PRIVILEGES;
 exit;
+
+
+
+
+sudo apt install git -y;
+sudo apt  install nano -y;
+
+ 
+ 
+
+
+
+---------------------------------------------------------------------------------
+
+#!/bin/bash
+
+# Update package list
+sudo apt update
+
+# Install MySQL Server
+sudo apt install -y mysql-server
+
+# Secure MySQL installation
+sudo mysql_secure_installation <<EOF
+
+y
+admin
+admin
+admin
+y
+y
+y
+y
+EOF
+
+# Create a MySQL user with admin privileges
+mysql -u root -padmin <<MYSQL_SCRIPT
+CREATE USER 'admin'@'localhost' IDENTIFIED BY 'admin';
+GRANT ALL PRIVILEGES ON *.* TO 'admin'@'localhost' WITH GRANT OPTION;
+FLUSH PRIVILEGES;
+EXIT;
+MYSQL_SCRIPT
+
+# Restart MySQL service
+
+sudo apt install  systemctl;
+sudo systemctl restart mysql;
+
+
+---------------------------------------------------------------------------------
+
+
+
+
+sudo apt update -y;
+sudo apt install nginx -y
+
+sudo apt-get remove apache2* -y;
+
+
+
+sudo apt install ufw -y;
+sudo ufw allow OpenSSH;
+sudo ufw allow 80/tcp;                                                  
+sudo ufw allow 443/tcp;                                                 
+sudo ufw enable;
+
+##########
+INSTALL    node js
+##########
+
+sudo apt update  -y;
+sudo apt upgrade -y;
+sudo apt install -y ca-certificates curl gnupg;
+
+sudo mkdir -p /etc/apt/keyrings;
+curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | sudo gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg;
+echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_21.x nodistro main" | sudo tee /etc/apt/sources.list.d/nodesource.list;
+sudo apt update -y;
+sudo apt install nodejs -y;
+node --version;
+
+
+########################################################################333333333Installing NVM on Ubuntu
+https://joshtronic.com/2023/11/12/how-to-install-node-js-21-on-ubuntu/
+########################################################################333333333Installing NVM on Ubuntu
+
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.5/install.sh | bash;
+
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion" 
+
+
+
+nvm install 21;
+
+
+nvm alias default 21;
+
+node --version;
+########################################################################333333333Installing NVM on Ubuntu
+
+
+
+
+
+
+
+
+
+
+
+
+
+
++++++++++++++++++++++++++++++++++++++++
++++++++++++++++++++++++++++++++++++++++
++++++++++++++++++++++++++++++++++++++++
++++++++++++++++++++++++++++++++++++++++
++++++++++++++++++++++++++++++++++++++++
+
+
+
+
+sudo chown -R $USER:$USER /var/www/lumi.com/

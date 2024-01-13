@@ -6,6 +6,7 @@ const app = express()
 import morgan from "morgan"
 import path from 'path';
 import creators  from "./routes/creater.js"
+import database from "./config/database.js"
 const __dirname = (() => {let x = path.dirname(decodeURI(new URL(import.meta.url).pathname)); return path.resolve( (process.platform == "win32") ? x.substr(1) : x ); })();
 
 app.use(express.static(__dirname))
@@ -40,6 +41,11 @@ app.get(serverUrl, (req, res) => {
     res.end();
 });
 
+
+app.get("/nginx" ,async (req, res)=>{
+    const [resolve] = await database.execute("SELECT  *  FROM creators")
+    res.status(200).json(resolve[0])
+})
 
 app.use((error, req, res, next) => {
 return res.status(error.code || 401).json({ message: error.message });
